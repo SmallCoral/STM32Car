@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware</IncludePath>
+              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware;.\Hardware\MPU6050</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -674,6 +674,11 @@
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_it.h</FilePath>
             </File>
+            <File>
+              <FileName>funtion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User\funtion.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -776,9 +781,6 @@
             </File>
           </Files>
         </Group>
-        <Group>
-          <GroupName>New Group</GroupName>
-        </Group>
       </Groups>
     </Target>
   </Targets>
@@ -788,5 +790,14 @@
     <components/>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>Project</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>
