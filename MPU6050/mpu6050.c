@@ -86,7 +86,7 @@ short MPU_Get_Temperature(void)
 	MPU_Read_Len(MPU_ADDR,MPU_TEMP_OUTH_REG,2,buf); 
     raw=((u16)buf[0]<<8)|buf[1];  
     temp=36.53+((double)raw)/340;  
-    return temp*100;;
+    return temp*100;
 }
 //得到陀螺仪值(原始值)
 //gx,gy,gz:陀螺仪x,y,z轴的原始读数(带符号)
@@ -102,7 +102,7 @@ u8 MPU_Get_Gyroscope(short *gx,short *gy,short *gz)
 		*gy=((u16)buf[2]<<8)|buf[3];  
 		*gz=((u16)buf[4]<<8)|buf[5];
 	} 	
-    return res;;
+    return res;
 }
 //得到加速度值(原始值)
 //gx,gy,gz:陀螺仪x,y,z轴的原始读数(带符号)
@@ -118,7 +118,7 @@ u8 MPU_Get_Accelerometer(short *ax,short *ay,short *az)
 		*ay=((u16)buf[2]<<8)|buf[3];  
 		*az=((u16)buf[4]<<8)|buf[5];
 	} 	
-    return res;;
+    return res;
 }
 //IIC连续写
 //addr:器件地址 

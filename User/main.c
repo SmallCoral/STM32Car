@@ -11,6 +11,7 @@ int main(void)
     Motor_Init();
     Key_Init();
     Buzzer_Init();
+		MPU_Init();
 
     OLED_ShowString(1, 1, "Hello");
 

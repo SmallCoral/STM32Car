@@ -98,49 +98,40 @@ void made3(void)
 {
     if (!made3_executed) // 确保 made3 只执行一次
     {
-        // 第三题任务要求
-        OLED_ShowString(3, 1, "Executing Mode 3");
+        char display_buffer[16];   // 用于 OLED 显示的字符串缓冲区
+        short gx, gy, gz;          // 原始陀螺仪角速度数据
+        float angle_x = 0, angle_y = 0, angle_z = 0; // 累积角度
+        float delta_time = 0.2f;   // 假设每次更新时间为 200ms（0.2秒）
+        
+        OLED_ShowString(1, 1, "Reading Angles");
 
-        // 1. 向前跑 3 秒
-        Motor_GoStraight(30); // 使用较低的速度前进
-        Delay_s(3); // 等待 3 秒
-
-        // 2. 精准右转 90 度
-        short gx, gy, gz;
-        short initial_angle = 0; // 初始角度
-        short current_angle = 0;
-        int target_angle = 90; // 目标右转角度（90度）
-
-        // 获取初始角度（陀螺仪的 Z 轴角度）
-        MPU_Get_Gyroscope(&gx, &gy, &gz);
-        initial_angle = gz;
-
-        // 右转直到旋转 90 度
-        Motor_SelfRight(30); // 启动右转
         while (1)
         {
-            // 不断获取陀螺仪数据
+            // 读取陀螺仪角速度数据
             MPU_Get_Gyroscope(&gx, &gy, &gz);
-            current_angle = gz - initial_angle; // 计算旋转角度变化
 
-            // 当旋转 90 度时停止右转
-            if (current_angle >= target_angle)
-            {
-                Motor_Stop(); // 停止转动
-                break;
-            }
+            // 累计角度计算，假设 gx/gy/gz 单位为度/秒
+            angle_x += gx * delta_time;
+            angle_y += gy * delta_time;
+            angle_z += gz * delta_time;
+
+            // 显示 X 轴角度
+            snprintf(display_buffer, sizeof(display_buffer), "X: %.2f", angle_x);
+            OLED_ShowString(1, 2, display_buffer);
+
+            // 显示 Y 轴角度
+            snprintf(display_buffer, sizeof(display_buffer), "Y: %.2f", angle_y);
+            OLED_ShowString(1, 3, display_buffer);
+
+            // 显示 Z 轴角度
+            snprintf(display_buffer, sizeof(display_buffer), "Z: %.2f", angle_z);
+            OLED_ShowString(1, 4, display_buffer);
+
+            // 延时 200 毫秒，模拟每次更新时间
+            Delay_ms(200);
         }
-
-        // 3. 向前跑 3 秒
-        Motor_GoStraight(20); // 使用较低的速度前进
-        Delay_s(3); // 等待 3 秒
-
-        // 停止小车
-        Motor_Stop(); 
-
-        // 设置标志变量，确保只执行一次
-        made3_executed = 1; 
-        OLED_ShowString(3, 1, "Made3 Executed");
     }
 }
+
+
 
