@@ -21,9 +21,10 @@ void MPU_IIC_Init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO口速度为50MHz
   GPIO_Init(GPIOB, &GPIO_InitStructure);					 //根据设定参数初始化GPIO 
 	
-  GPIO_SetBits(GPIOB,GPIO_Pin_6|GPIO_Pin_7);						 //PB10,PB11 输出高	
+  GPIO_SetBits(GPIOB,GPIO_Pin_6|GPIO_Pin_7);						 //PB6,PB7 输出高	
  
 }
+
 //产生IIC起始信号
 void MPU_IIC_Start(void)
 {
@@ -34,7 +35,8 @@ void MPU_IIC_Start(void)
  	MPU_IIC_SDA=0;//START:when CLK is high,DATA change form high to low 
 	MPU_IIC_Delay();
 	MPU_IIC_SCL=0;//钳住I2C总线，准备发送或接收数据 
-}	  
+}
+
 //产生IIC停止信号
 void MPU_IIC_Stop(void)
 {
@@ -128,19 +130,6 @@ u8 MPU_IIC_Read_Byte(unsigned char ack)
         MPU_IIC_Ack(); //发送ACK   
     return receive;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

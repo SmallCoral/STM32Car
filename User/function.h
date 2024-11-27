@@ -6,6 +6,15 @@
 #include "Key.h"
 #include "buzzer.h" 
 #include "LED.h" 
+#include "mpu6050.h"
+#include "mpuiic.h"
+#include "stdio.h"										
+#include "string.h"										
+#include "stdlib.h"
+#include "sys.h"																				
+#include "usart.h"																																							
+#include "inv_mpu.h"									
+#include "inv_mpu_dmp_motion_driver.h"
 
 #define BLACK_LINE_DETECTED 0    // 红外传感器低电平表示检测到黑线
 #define WHITE_SURFACE_DETECTED 1 // 红外传感器高电平表示检测到白色
@@ -92,16 +101,38 @@ void made3(void)
         // 第三题任务要求
         OLED_ShowString(3, 1, "Executing Mode 3");
 
-        // 右转并等待 3 秒
-        Motor_SelfRight(20); 
+        // 1. 向前跑 3 秒
+        Motor_GoStraight(30); // 使用较低的速度前进
         Delay_s(3); // 等待 3 秒
 
-        // 前进并等待 3 秒
+        // 2. 精准右转 90 度
+        short gx, gy, gz;
+        short initial_angle = 0; // 初始角度
+        short current_angle = 0;
+        int target_angle = 90; // 目标右转角度（90度）
+
+        // 获取初始角度（陀螺仪的 Z 轴角度）
+        MPU_Get_Gyroscope(&gx, &gy, &gz);
+        initial_angle = gz;
+
+        // 右转直到旋转 90 度
+        Motor_SelfRight(30); // 启动右转
+        while (1)
+        {
+            // 不断获取陀螺仪数据
+            MPU_Get_Gyroscope(&gx, &gy, &gz);
+            current_angle = gz - initial_angle; // 计算旋转角度变化
+
+            // 当旋转 90 度时停止右转
+            if (current_angle >= target_angle)
+            {
+                Motor_Stop(); // 停止转动
+                break;
+            }
+        }
+
+        // 3. 向前跑 3 秒
         Motor_GoStraight(20); // 使用较低的速度前进
-        Delay_s(3); // 等待 3 秒
-
-        // 再次右转并等待 3 秒
-        Motor_SelfRight(20); 
         Delay_s(3); // 等待 3 秒
 
         // 停止小车
@@ -112,3 +143,4 @@ void made3(void)
         OLED_ShowString(3, 1, "Made3 Executed");
     }
 }
+

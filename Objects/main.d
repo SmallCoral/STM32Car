@@ -36,3 +36,12 @@
 .\objects\main.o: .\Hardware\Key.h
 .\objects\main.o: .\Hardware\buzzer.h
 .\objects\main.o: .\Hardware\LED.h
+.\objects\main.o: .\MPU6050\mpu6050.h
+.\objects\main.o: .\MPU6050\mpuiic.h
+.\objects\main.o: .\sys\sys.h
+.\objects\main.o: C:\Keil_v5\ARM\ARM5\Bin\..\include\stdio.h
+.\objects\main.o: C:\Keil_v5\ARM\ARM5\Bin\..\include\string.h
+.\objects\main.o: C:\Keil_v5\ARM\ARM5\Bin\..\include\stdlib.h
+.\objects\main.o: .\Hardware\usart.h
+.\objects\main.o: .\MPU6050\eMPL\inv_mpu.h
+.\objects\main.o: .\MPU6050\eMPL\inv_mpu_dmp_motion_driver.h

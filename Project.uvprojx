@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware;.\MPU6050;.\sys;.\usart</IncludePath>
+              <IncludePath>.\Start;.\User;.\Library;.\System;.\Hardware;.\MPU6050;.\MPU6050\eMPL;.\sys;.\usart</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -660,6 +660,11 @@
               <FilePath>.\User\main.c</FilePath>
             </File>
             <File>
+              <FileName>function.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User\function.h</FilePath>
+            </File>
+            <File>
               <FileName>stm32f10x_conf.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_conf.h</FilePath>
@@ -673,11 +678,6 @@
               <FileName>stm32f10x_it.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_it.h</FilePath>
-            </File>
-            <File>
-              <FileName>function.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\User\function.h</FilePath>
             </File>
           </Files>
         </Group>
