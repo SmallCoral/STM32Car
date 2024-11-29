@@ -131,6 +131,53 @@ void OLED_Clear(void)
   * @param  Char 要显示的一个字符，范围：ASCII可见字符
   * @retval 无
   */
+
+
+void OLED_ShowChinese(uint8_t Line,uint8_t Column,uint8_t num)
+{
+	uint8_t i;
+	OLED_SetCursor((Line-1)*2,(Column-1)*16);
+	for(i=0;i<16;i++)
+	{
+		OLED_WriteData(Font_Chinese[2*num][i]);
+	}
+	OLED_SetCursor((Line-1)*2+1,(Column-1)*16);
+	for(i=0;i<16;i++)
+	{
+		OLED_WriteData(Font_Chinese[2*num+1][i]);
+	}
+}
+/***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y为页的范围0～7*****************/
+void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char PI[])
+{  
+ unsigned int j=0;
+ unsigned char x,y;
+  
+ // if(y1%8==0) y=y1/8;      
+ // else y=y1/8+1;
+ for(y=y0;y<y1;y++)
+ {
+  OLED_SetCursor(y,x0);  //第一个设置y,第二个设置x//设置光标位置左上角(0,0) 往下0-7 ， 往右0-127
+    for(x=x0;x<x1;x++)
+     {      
+      OLED_WriteData(PI[j++]);      //写数据
+     }
+ }
+} 
+
+
+void OLED_BMP(int i)
+{ 
+   OLED_Clear();
+   OLED_DrawBMP(0,2,127,0,PI[i]);
+   OLED_DrawBMP(0,2,127,1,PI[i]);
+   OLED_DrawBMP(0,2,127,2,PI[i]);
+   OLED_DrawBMP(0,2,127,3,PI[i]);
+   OLED_DrawBMP(0,2,127,4,PI[i]);
+   OLED_DrawBMP(0,2,127,5,PI[i]);
+   OLED_DrawBMP(0,2,127,6,PI[i]);
+   OLED_DrawBMP(0,2,127,7,PI[i]);
+}
 void OLED_ShowChar(uint8_t Line, uint8_t Column, char Char)
 {      	
 	uint8_t i;

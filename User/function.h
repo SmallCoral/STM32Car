@@ -24,6 +24,22 @@ uint8_t speed = 30;       // 小车运行速度
 uint8_t one = 0;          // 黑线检测标志，用于确保LED_FMQ()只执行一次
 uint8_t made3_executed = 0; // 标志变量，用于确保made3只执行一次
 
+void OLED_NAME(void)
+{
+		OLED_ShowChinese(1,1,0);
+		OLED_ShowChinese(1,2,1);
+		OLED_ShowChinese(1,3,2);
+		OLED_ShowChinese(1,4,3);
+
+		OLED_ShowChinese(2,1,5);
+		OLED_ShowChinese(2,2,6);
+		OLED_ShowChinese(2,3,7);
+		OLED_ShowChinese(3,1,9);	
+		OLED_ShowChinese(3,2,10);
+		OLED_ShowChinese(4,1,12);
+		OLED_ShowChinese(4,2,13);
+}
+
 void LED_FMQ(void)
 {
     LED_ON();
@@ -48,7 +64,8 @@ void made1(void)		//第一题
         if (!tracking)
         {
             Motor_Stop();
-            OLED_ShowString(3, 1, "Stopped         ");
+            OLED_ShowString(2, 1, "Stopped         ");
+						OLED_ShowString(3, 1, "                ");
             one = 0; // 重置黑线检测标志
         }
     }
@@ -59,12 +76,14 @@ void made1(void)		//第一题
             i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
         {
             Motor_GoStraight(speed); // 前进
-            OLED_ShowString(3, 1, "Moving          ");
+            OLED_ShowString(2, 1, "Moving          ");
+						OLED_ShowString(3, 1, "                ");
         }
         else // 检测到黑线
         {
             Motor_Stop();
-            OLED_ShowString(3, 1, "Black Line Detected");
+            OLED_ShowString(2, 1, "Black Line Detected");
+						OLED_ShowString(3, 1, "                   ");
             LED_FMQ(); // 执行一次LED_FMQ
             one = 1; // 标志设置，确保不再重复执行
         }
@@ -80,16 +99,19 @@ void made2(void)
         if (moving)
         {
             Motor_GoStraight(speed);
-            OLED_ShowString(3, 1, "Moving          ");
+            OLED_ShowString(2, 1, "Moving          ");
+						OLED_ShowString(3, 1, "                ");
             Delay_s(3);
             Motor_Stop();
-            OLED_ShowString(3, 1, "Stopped         ");
+            OLED_ShowString(2, 1, "Stopped         ");
+						OLED_ShowString(3, 1, "                ");
             LED_FMQ();
         }
         else
         {
             Motor_Stop();
-            OLED_ShowString(3, 1, "Stopped         ");
+            OLED_ShowString(2, 1, "Stopped         ");
+						OLED_ShowString(3, 1, "                ");
         }
     }
 }
@@ -103,7 +125,8 @@ void made3(void)
         float angle_x = 0, angle_y = 0, angle_z = 0; // 累积角度
         float delta_time = 0.2f;   // 假设每次更新时间为 200ms（0.2秒）
         
-        OLED_ShowString(1, 1, "Reading Angles");
+        OLED_ShowString(2, 1, "Reading Angles");
+				OLED_ShowString(3, 1, "                ");
 
         while (1)
         {
