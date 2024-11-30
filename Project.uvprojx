@@ -665,6 +665,11 @@
               <FilePath>.\User\function.h</FilePath>
             </File>
             <File>
+              <FileName>function2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User\function2.h</FilePath>
+            </File>
+            <File>
               <FileName>stm32f10x_conf.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_conf.h</FilePath>
@@ -783,6 +788,16 @@
               <FileName>Infrared.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Hardware\Infrared.h</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\pid.h</FilePath>
             </File>
           </Files>
         </Group>

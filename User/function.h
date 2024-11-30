@@ -4,16 +4,17 @@
 #include "Motor.h"
 #include "Infrared.h"
 #include "Key.h"
-#include "buzzer.h" 
-#include "LED.h" 
-#include "mpu6050.h"
+#include "buzzer.h"
+#include "LED.h"
+#include <math.h>
+//#include "mpu6050.h"
 #include "mpuiic.h"
-#include "stdio.h"										
-#include "string.h"										
+#include "stdio.h"
+#include "string.h"
 #include "stdlib.h"
-#include "sys.h"																				
-#include "usart.h"																																							
-#include "inv_mpu.h"									
+#include "sys.h"
+#include "usart.h"
+#include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 
 #define BLACK_LINE_DETECTED 0    // 红外传感器低电平表示检测到黑线
@@ -22,7 +23,8 @@
 uint8_t tracking = 0;    // 巡线模式标志
 uint8_t speed = 30;       // 小车运行速度
 uint8_t one = 0;          // 黑线检测标志，用于确保LED_FMQ()只执行一次
-uint8_t made3_executed = 0; // 标志变量，用于确保made3只执行一次
+
+float Pitch,Roll,Yaw;
 
 void OLED_NAME(void)
 {
@@ -34,8 +36,10 @@ void OLED_NAME(void)
 		OLED_ShowChinese(2,1,5);
 		OLED_ShowChinese(2,2,6);
 		OLED_ShowChinese(2,3,7);
+	
 		OLED_ShowChinese(3,1,9);	
 		OLED_ShowChinese(3,2,10);
+	
 		OLED_ShowChinese(4,1,12);
 		OLED_ShowChinese(4,2,13);
 }
@@ -115,46 +119,4 @@ void made2(void)
         }
     }
 }
-
-void made3(void)
-{
-    if (!made3_executed) // 确保 made3 只执行一次
-    {
-        char display_buffer[16];   // 用于 OLED 显示的字符串缓冲区
-        short gx, gy, gz;          // 原始陀螺仪角速度数据
-        float angle_x = 0, angle_y = 0, angle_z = 0; // 累积角度
-        float delta_time = 0.2f;   // 假设每次更新时间为 200ms（0.2秒）
-        
-        OLED_ShowString(2, 1, "Reading Angles");
-				OLED_ShowString(3, 1, "                ");
-
-        while (1)
-        {
-            // 读取陀螺仪角速度数据
-            MPU_Get_Gyroscope(&gx, &gy, &gz);
-
-            // 累计角度计算，假设 gx/gy/gz 单位为度/秒
-            angle_x += gx * delta_time;
-            angle_y += gy * delta_time;
-            angle_z += gz * delta_time;
-
-            // 显示 X 轴角度
-            snprintf(display_buffer, sizeof(display_buffer), "X: %.2f", angle_x);
-            OLED_ShowString(1, 2, display_buffer);
-
-            // 显示 Y 轴角度
-            snprintf(display_buffer, sizeof(display_buffer), "Y: %.2f", angle_y);
-            OLED_ShowString(1, 3, display_buffer);
-
-            // 显示 Z 轴角度
-            snprintf(display_buffer, sizeof(display_buffer), "Z: %.2f", angle_z);
-            OLED_ShowString(1, 4, display_buffer);
-
-            // 延时 200 毫秒，模拟每次更新时间
-            Delay_ms(200);
-        }
-    }
-}
-
-
 

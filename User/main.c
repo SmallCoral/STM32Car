@@ -1,4 +1,6 @@
-#include "function.h"
+//#include "function.h"
+#include "function2.h"
+
 
 int main(void)
 {
@@ -11,8 +13,8 @@ int main(void)
     Motor_Init();
     Key_Init();
     Buzzer_Init();
-		MPU_Init();
-
+    MPU_Init();
+		
     OLED_NAME();
 
     while (1)
@@ -22,28 +24,28 @@ int main(void)
         {
             mode++;
             if (mode > 3) mode = 1; // 循环切换模式 (1, 2, 3)
-            
+
             // 根据模式显示状态
             if (mode == 1)
             {
                 OLED_ShowString(1, 1, "Mode 1       ");
-								OLED_ShowString(2, 1, "             ");
-								OLED_ShowString(3, 1, "             ");
-								OLED_ShowString(4, 1, "             ");
+                OLED_ShowString(2, 1, "             ");
+                OLED_ShowString(3, 1, "             ");
+                OLED_ShowString(4, 1, "             ");
             }
             else if (mode == 2)
             {
                 OLED_ShowString(1, 1, "Mode 2       ");
-								OLED_ShowString(2, 1, "             ");
-								OLED_ShowString(3, 1, "             ");
-								OLED_ShowString(4, 1, "             ");
+                OLED_ShowString(2, 1, "             ");
+                OLED_ShowString(3, 1, "             ");
+                OLED_ShowString(4, 1, "             ");
             }
             else if (mode == 3)
             {
                 OLED_ShowString(1, 1, "Mode 3       ");
-								OLED_ShowString(2, 1, "             ");
-								OLED_ShowString(3, 1, "             ");
-								OLED_ShowString(4, 1, "             ");
+                OLED_ShowString(2, 1, "             ");
+                OLED_ShowString(3, 1, "             ");
+                OLED_ShowString(4, 1, "             ");
             }
 
             Motor_Stop(); // 切换模式时停止小车
@@ -64,4 +66,3 @@ int main(void)
         }
     }
 }
-
