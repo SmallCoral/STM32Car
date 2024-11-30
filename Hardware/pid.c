@@ -11,7 +11,7 @@ void PID_Init(PID *pid,float p,float i,float d,float maxI,float maxOut)
     pid->maxIntegral=maxI;//积分限幅
     pid->maxOutput=maxOut;//输出限幅
 }
- 
+
 //进行一次pid计算
 //参数为(pid结构体,目标值,反馈值)，计算结果放在pid结构体的output成员中
 void PID_Calc(PID *pid,float reference,float feedback)

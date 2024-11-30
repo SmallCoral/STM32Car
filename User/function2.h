@@ -1,104 +1,74 @@
-#include "stm32f10x.h"                  // 设备头文件
-#include "PWM.h"
 #include "function.h"
 #include "mpu6050.h"
-#include "pid.h"  // 引入PID控制器
+#include "pid.h"
+#include "motor.h"      // 假设有motor控制函数
+#include "oled.h"       // 假设有OLED显示函数
 
-// PID 控制器实例
-PID myPID;  // 创建一个PID结构体
+PID mypid;  // PID控制器结构体
 
-// PID 控制器参数
-float target_angle = 90.0;  // 目标角度
-float current_angle = 0.0;  // 当前角度
-float left_speed = 0.0, right_speed = 0.0;  // 左右轮速度
-
-// 初始化PID控制器
-void PID_Init_Controller(void)
-{
-    PID_Init(&myPID, 1.0, 0.0, 0.0, 100.0, 255.0); // 假设 Kp=1.0, Ki=0.0, Kd=0.0
-}
-
-// 更新PID并计算左右轮速度
-void update_pid(void)
-{
-    // 进行PID计算
-    PID_Calc(&myPID, target_angle, current_angle);  // 使用当前角度和目标角度计算PID输出
-
-    // 根据PID输出调整左右轮的转速
-    left_speed = 0.5 + myPID.output;
-    right_speed = 0.5 - myPID.output;
-}
-
-// 电机控制函数
-void set_motor_speed(void)
-{
-    // 根据PID控制输出左右电机转速
-    GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)(left_speed > 0.5));
-    GPIO_WriteBit(GPIOA, GPIO_Pin_5, (BitAction)(left_speed < 0.5));
-    GPIO_WriteBit(GPIOA, GPIO_Pin_6, (BitAction)(right_speed > 0.5));
-    GPIO_WriteBit(GPIOA, GPIO_Pin_7, (BitAction)(right_speed < 0.5));
-}
-
+// made3函数：执行预定动作
 void made3(void)
 {
-    // 初始化电机控制
-    Motor_Init();
-    // 初始化PID控制器
-    PID_Init_Controller();
+    short ax, ay, az;
+    short gx, gy, gz;
+    float roll, pitch, yaw;
+    u8 res;
 
-    // 设置初始状态（向前）
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_5);
-    GPIO_SetBits(GPIOA, GPIO_Pin_6);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_7);
-    Delay_ms(1000);
+    // 初始化PID参数（假设你已经设置了PID的相关参数）
+    PID_Init(&mypid, 1.0, 0.1, 0.5, 100, 255);
 
-    // 向前运动，目标角度为0
-    target_angle = 0.0;
-    while (fabs(myPID.error) > 0.1)  // 当误差小于0.1时认为已经到达目标角度
+    // 1. 向前行驶3秒
+    Motor_GoStraight(30);  // 设置速度50，执行前进
+    Delay_ms(3000);        // 持续前进3秒
+    Motor_GoStraight(0);   // 停止前进
+
+    // 2. 获取当前姿态（加速度和陀螺仪数据）
+    res = MPU_Get_Accelerometer(&ax, &ay, &az);  // 获取加速度数据
+    if (res == 0)
     {
-        update_pid();  // 更新PID计算
-        set_motor_speed();  // 更新电机转速
-        Delay_ms(10);  // 延迟10ms
+        // 计算姿态角度 (假设我们根据加速度值来估算pitch和roll角度)
+        roll = atan2(ay, az) * 180 / 3.14159;    // 使用加速度值计算roll角度
+        pitch = atan2(-ax, sqrt(ay * ay + az * az)) * 180 / 3.14159;  // 计算pitch角度
+
+        // 显示当前角度（假设OLED_ShowString函数是用来显示字符串的）
+        OLED_ShowString(2, 1, "Roll: ");  // 显示“Roll: ”
+        OLED_ShowNum(2, 7, (int)roll, 3);  // 显示roll角度，最多三位数
+        OLED_ShowString(3, 1, "Pitch: "); // 显示“Pitch: ”
+        OLED_ShowNum(3, 8, (int)pitch, 3); // 显示pitch角度，最多三位数
     }
 
-    // 向前一段时间
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_5);
-    GPIO_SetBits(GPIOA, GPIO_Pin_6);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_7);
-    Delay_ms(1000);
-
-    // 左转，目标角度为90度
-    target_angle = 90.0;
-    while (fabs(myPID.error) > 0.1)
+    // 3. 使用PID控制右转90度
+    // 目标角度为90度（右转90度）
+    while (1)
     {
-        update_pid();  // 更新PID计算
-        set_motor_speed();  // 更新电机转速
-        Delay_ms(10);  // 延迟10ms
+        // 获取当前角度
+        res = MPU_Get_Gyroscope(&gx, &gy, &gz);  // 获取陀螺仪数据
+        if (res == 0)
+        {
+            // 计算yaw角度（假设通过陀螺仪数据估算转角）
+            yaw += gx * 0.0000611;  // 假设 gx 是单位为dps的数据，0.0000611为转换系数
+
+            // 使用PID控制来调整转角
+            PID_Calc(&mypid, 90.0, yaw);  // 目标90度，当前yaw值
+            int pwm_output = mypid.output;
+
+            // 根据PID输出调整转向（这里假设通过PWM信号控制右转）
+            if (yaw < 90.0)  // 若yaw小于目标值90度，继续右转
+            {
+                Motor_SelfRight(pwm_output);
+            }
+            else  // 达到90度后停止转向
+            {
+                Motor_SelfRight(0);  // 停止右转
+                break;  // 退出循环
+            }
+        }
+
+        Delay_ms(50);  // 延迟50ms，避免过快的计算和过大的转动
     }
 
-    // 向前一段时间
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_5);
-    GPIO_SetBits(GPIOA, GPIO_Pin_6);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_7);
-    Delay_ms(1000);
-
-    // 右转，目标角度为90度
-    target_angle = -90.0;  // 右转
-    while (fabs(myPID.error) > 0.1)
-    {
-        update_pid();  // 更新PID计算
-        set_motor_speed();  // 更新电机转速
-        Delay_ms(10);  // 延迟10ms
-    }
-
-    // 向前一段时间
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_5);
-    GPIO_SetBits(GPIOA, GPIO_Pin_6);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_7);
-    Delay_ms(1000);
-
+    // 4. 右转完毕后再次向前行驶
+    Motor_GoStraight(30);  // 向前行驶
+    Delay_ms(3000);        // 持续前进3秒
+    Motor_GoStraight(0);   // 停止前进
 }
