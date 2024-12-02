@@ -66,7 +66,7 @@
 //        }
 //    }
 //}
-#include "stm32f10x.h"                  // Device header
+#include "stm32f10x.h"                  // 设备头文件
 #include "Delay.h"
 #include "OLED.h"
 #include "Motor.h"
@@ -122,14 +122,14 @@ void Turn_90_Degrees(void) {
     // 进行PID计算
     PID_Calc(&turnPID, targetAngle, currentAngle);
     
-    // 根据PID输出控制电机转向
-    if (angleError > 0) {
-        // 向右转
-        Motor_SelfRight(turnPID.output);
-    } else if (angleError < 0) {
-        // 向左转
-        Motor_SelfLeft(turnPID.output);
-    }
+    //// 根据PID输出控制电机
+    //if (angleError > 0) {
+    //    // 向右转
+    //    Motor_SelfRight(turnPID.output);
+    //} else if (angleError < 0) {
+    //    // 向左转
+    //    Motor_SelfLeft(turnPID.output);
+    //}
     
     // 判断是否转弯完成
     if (fabs(angleError) < 2.0) {  // 假设2度误差即为完成
@@ -162,13 +162,27 @@ int main(void) {
     // 初始化电机
     Motor_Init();
 
+    // 初始化OLED
+    OLED_Init();
+
     // 启动时右转90度
     Turn_Right();
     
     // 右转90度后开始直行
     while(1) {
-        Move_Forward();  // 向前直行
-        Delay_ms(10);    // 每10ms执行一次
+        // 获取当前角度
+        Get_Current_Angle();
+
+        // 更新OLED显示
+        OLED_ShowString(1, 1, "Target Angle: ");
+        OLED_ShowNum(2, 1, (uint32_t)targetAngle, 3);  // 显示目标角度
+        OLED_ShowString(3, 1, "Current Angle: ");
+        OLED_ShowNum(4, 16, (uint32_t)currentAngle, 3);  // 显示当前角度
+        
+        // 向前直行
+        //Move_Forward();  // 向前直行
+        Delay_ms(500);    // 每10ms执行一次
     }
 }
+
 
