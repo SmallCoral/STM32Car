@@ -7,7 +7,7 @@
 #include "buzzer.h"
 #include "LED.h"
 #include <math.h>
-//#include "mpu6050.h"
+#include "mpu6050.h"
 #include "mpuiic.h"
 #include "stdio.h"
 #include "string.h"
@@ -118,5 +118,14 @@ void made2(void)
 						OLED_ShowString(3, 1, "                ");
         }
     }
+}
+
+void made3(void)
+{
+		if (GetKeyState(GPIO_Pin_13, GPIOC))
+		{
+				Motor_SelfRight(20);
+		}
+		
 }
 
