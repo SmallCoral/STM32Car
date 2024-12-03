@@ -1,6 +1,8 @@
 #include "stm32f10x.h"                  // Device header
 #include "PWM.h"
 //电机
+extern uint8_t speed;      //速度大小可以自己定义
+
 void Motor_Init(void)
 {
 	PWM_TIM2Init();

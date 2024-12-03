@@ -122,10 +122,54 @@ void made2(void)
 
 void made3(void)
 {
-		if (GetKeyState(GPIO_Pin_13, GPIOC))
-		{
-				Motor_SelfRight(20);
-		}
-		
+    static uint8_t executed = 0;  // 标志变量，用于确保只执行一次
+
+    if (GetKeyState(GPIO_Pin_13, GPIOC) && !executed)  // 检测KEY0并且确保未执行过
+    {
+        // 前进3800ms
+        Motor_GoStraight(speed);
+        Delay_ms(5000);
+				Motor_Stop();
+        LED_FMQ();
+				
+        // 右转1200ms
+        Motor_SelfRight(35);
+        Delay_ms(1100);
+        
+        // 前进2800ms
+        Motor_GoStraight(speed);
+        Delay_ms(2800);
+				Motor_Stop();
+				LED_FMQ();
+				
+				// 右转1285ms
+        Motor_SelfRight(35);
+        Delay_ms(1180);
+				// 前进3800ms
+        Motor_GoStraight(speed);
+        Delay_ms(4500);
+				Motor_Stop();
+        LED_FMQ();
+				
+        // 右转1285ms
+        Motor_SelfRight(35);
+        Delay_ms(1100);
+        
+        // 前进3000ms
+        Motor_GoStraight(speed);
+        Delay_ms(2800);
+				Motor_Stop();
+				LED_FMQ();
+        
+        // 设置标志，确保以后不再执行
+        executed = 1;
+        
+        // 停止小车并显示状态
+        Motor_Stop();
+        OLED_ShowString(2, 1, "Stopped         ");
+        OLED_ShowString(3, 1, "                ");
+        LED_FMQ();
+    }
 }
 
+	
