@@ -6,8 +6,9 @@ int main(void)
     uint8_t mode = 0; // 当前模式 (0: 未选择, 1: 第一题, 2: 第二题, 3: 第三题)
 
     // 各个模块初始化
+		OLED_Init();
     LED_Init();
-    OLED_Init();
+    //OLED_Init();
     Infrared_Init();
     Motor_Init();
     Key_Init();

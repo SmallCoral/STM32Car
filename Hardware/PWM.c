@@ -95,3 +95,4 @@ void PWM_TIM3Compare3(uint16_t Compare)
 {
 	TIM_SetCompare3(TIM3,Compare);
 }
+

@@ -126,44 +126,90 @@ void made3(void)
 
     if (GetKeyState(GPIO_Pin_13, GPIOC) && !executed)  // 检测KEY0并且确保未执行过
     {
-        // 前进3800ms
+        // 1. 小车前进直到检测到黑线
         Motor_GoStraight(speed);
-        Delay_ms(5000);
-				Motor_Stop();
-        LED_FMQ();
-				
-        // 右转1200ms
-        Motor_SelfRight(35);
-        Delay_ms(1100);
+        while (1) {
+            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED || i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED) {
+                Motor_Stop();  // 停止小车
+                OLED_ShowString(2, 1, "Black Line Detected");
+                OLED_ShowString(3, 1, "                ");
+                LED_FMQ();  // 执行一次LED_FMQ
+                Delay_ms(500); // 稍微延时，防止状态不稳定
+                break;  // 跳出循环，进行下一个操作
+            }
+        }
+
+        // 2. 右转800ms
+        Motor_TurnRight(40);
+        Delay_ms(1600);
         
-        // 前进2800ms
+        // 3. 前进直到检测到白线
         Motor_GoStraight(speed);
-        Delay_ms(2800);
-				Motor_Stop();
-				LED_FMQ();
-				
-				// 右转1285ms
-        Motor_SelfRight(35);
-        Delay_ms(1180);
-				// 前进3800ms
+        while (1) {
+            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+            if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
+                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED) {
+                Motor_Stop();  // 停止小车
+                OLED_ShowString(2, 1, "White Surface Detected");
+                OLED_ShowString(3, 1, "                   ");
+                LED_FMQ();  // 执行一次LED_FMQ
+                //Delay_ms(500); // 稍微延时，防止状态不稳定
+                break;  // 跳出循环，进行下一个操作
+            }
+        }
+
+        // 4. 右转800ms
+        Motor_TurnRight(40);
+        Delay_ms(1600);
+
+        // 5. 前进直到检测到黑线
         Motor_GoStraight(speed);
-        Delay_ms(4500);
-				Motor_Stop();
-        LED_FMQ();
-				
-        // 右转1285ms
-        Motor_SelfRight(35);
-        Delay_ms(1100);
-        
-        // 前进3000ms
+        while (1) {
+            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED || i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED) {
+                Motor_Stop();  // 停止小车
+                OLED_ShowString(2, 1, "Black Line Detected");
+                OLED_ShowString(3, 1, "                ");
+                LED_FMQ();  // 执行一次LED_FMQ
+                //Delay_ms(500); // 稍微延时，防止状态不稳定
+                break;  // 跳出循环，进行下一个操作
+            }
+        }
+
+        // 6. 右转800ms
+        Motor_TurnRight(40);
+        Delay_ms(1600);
+
+        // 7. 前进直到检测到白线并停止
         Motor_GoStraight(speed);
-        Delay_ms(2800);
-				Motor_Stop();
-				LED_FMQ();
-        
+        while (1) {
+            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+            if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
+                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED) {
+                Motor_Stop();  // 停止小车
+                OLED_ShowString(2, 1, "White Surface Detected");
+                OLED_ShowString(3, 1, "                   ");
+                LED_FMQ();  // 执行一次LED_FMQ
+                break;  // 停止所有操作
+            }
+        }
+
         // 设置标志，确保以后不再执行
         executed = 1;
-        
+
         // 停止小车并显示状态
         Motor_Stop();
         OLED_ShowString(2, 1, "Stopped         ");
@@ -171,5 +217,6 @@ void made3(void)
         LED_FMQ();
     }
 }
+
 
 	
