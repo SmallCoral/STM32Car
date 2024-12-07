@@ -68,8 +68,8 @@ void made1(void)		//第一题
         if (!tracking)
         {
             Motor_Stop();
-            OLED_ShowString(2, 1, "Stopped         ");
-						OLED_ShowString(3, 1, "                ");
+            OLED_ShowString(2, 1, "Stopped            ");
+						OLED_ShowString(3, 1, "                   ");
             one = 0; // 重置黑线检测标志
         }
     }
@@ -80,8 +80,8 @@ void made1(void)		//第一题
             i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
         {
             Motor_GoStraight(speed); // 前进
-            OLED_ShowString(2, 1, "Moving          ");
-						OLED_ShowString(3, 1, "                ");
+            OLED_ShowString(2, 1, "Moving             ");
+						OLED_ShowString(3, 1, "                   ");
         }
         else // 检测到黑线
         {
@@ -103,19 +103,19 @@ void made2(void)
         if (moving)
         {
             Motor_GoStraight(speed);
-            OLED_ShowString(2, 1, "Moving          ");
-						OLED_ShowString(3, 1, "                ");
+            OLED_ShowString(2, 1, "Moving             ");
+						OLED_ShowString(3, 1, "                   ");
             Delay_s(3);
             Motor_Stop();
-            OLED_ShowString(2, 1, "Stopped         ");
-						OLED_ShowString(3, 1, "                ");
+            OLED_ShowString(2, 1, "Stopped            ");
+						OLED_ShowString(3, 1, "                   ");
             LED_FMQ();
         }
         else
         {
             Motor_Stop();
-            OLED_ShowString(2, 1, "Stopped         ");
-						OLED_ShowString(3, 1, "                ");
+            OLED_ShowString(2, 1, "Stopped            ");
+						OLED_ShowString(3, 1, "                   ");
         }
     }
 }
@@ -212,8 +212,8 @@ void made3(void)
 
         // 停止小车并显示状态
         Motor_Stop();
-        OLED_ShowString(2, 1, "Stopped         ");
-        OLED_ShowString(3, 1, "                ");
+        OLED_ShowString(2, 1, "Stopped            ");
+        OLED_ShowString(3, 1, "                   ");
         LED_FMQ();
     }
 }
