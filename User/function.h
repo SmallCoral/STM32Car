@@ -17,12 +17,12 @@
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 
-#define BLACK_LINE_DETECTED 0    // 红外传感器低电平表示检测到黑线
-#define WHITE_SURFACE_DETECTED 1 // 红外传感器高电平表示检测到白色
+#define BLACK_LINE_DETECTED 0    	// 红外传感器低电平表示检测到黑线
+#define WHITE_SURFACE_DETECTED 1 	// 红外传感器高电平表示检测到白色
  
-uint8_t tracking = 0;    // 巡线模式标志
-uint8_t speed = 30;       // 小车运行速度
-uint8_t one = 0;          // 黑线检测标志，用于确保LED_FMQ()只执行一次
+uint8_t tracking = 0;    					// 巡线模式标志
+uint8_t speed = 30;       				// 小车运行速度
+uint8_t one = 0;          				// 黑线检测标志，用于确保LED_FMQ()只执行一次
 
 float Pitch,Roll,Yaw;
 
