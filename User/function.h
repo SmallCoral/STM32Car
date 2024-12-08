@@ -122,101 +122,171 @@ void made2(void)
 
 void made3(void)
 {
-    static uint8_t executed = 0;  // 标志变量，用于确保只执行一次
+    static uint8_t tracking = 0; // 追踪状态
+    static uint8_t stage = 0;    // 当前执行阶段
 
-    if (GetKeyState(GPIO_Pin_13, GPIOC) && !executed)  // 检测KEY0并且确保未执行过
+    if (GetKeyState(GPIO_Pin_13, GPIOC)) // 检测KEY0
     {
-        // 1. 小车前进直到检测到黑线
-        Motor_GoStraight(speed);
-        while (1) {
-            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
-            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
-            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
-            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
-            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED || i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED) {
-                Motor_Stop();  // 停止小车
+        tracking = !tracking; // 切换追踪状态
+        if (!tracking)
+        {
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped            ");
+            stage = 0; // 重置阶段
+        }
+    }
+
+    if (tracking)
+    {
+        uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+        uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+        uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+        uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+
+        switch (stage)
+        {
+        case 0: // 阶段0：前进直到检测到黑线
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Moving Forward   ");
+            if (i1 == BLACK_LINE_DETECTED || i2 == BLACK_LINE_DETECTED ||
+                i3 == BLACK_LINE_DETECTED || i4 == BLACK_LINE_DETECTED)
+            {
+                Motor_Stop();
                 OLED_ShowString(2, 1, "Black Line Detected");
-                OLED_ShowString(3, 1, "                ");
-                LED_FMQ();  // 执行一次LED_FMQ
-                Delay_ms(500); // 稍微延时，防止状态不稳定
-                break;  // 跳出循环，进行下一个操作
+                LED_FMQ();
+                stage = 1; // 进入下一阶段
             }
-        }
+            break;
 
-        // 2. 右转800ms
-        Motor_TurnRight(40);
-        Delay_ms(1600);
-        
-        // 3. 前进直到检测到白线
-        Motor_GoStraight(speed);
-        while (1) {
-            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
-            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
-            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
-            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+        case 1: // 阶段1：右转1.5秒
+            Motor_TurnRight(40);
+            OLED_ShowString(2, 1, "Turning Right    ");
+            Delay_ms(1500);
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Turn Complete    ");
+            stage = 2; // 进入下一阶段
+            break;
+
+        case 2: // 阶段2：前进2.5秒
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Moving Forward   ");
+            Delay_ms(2500);
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Task Complete    ");
+            LED_FMQ();
+            tracking = 0; // 任务完成，重置追踪状态
+            stage = 0; // 重置阶段
+            break;
+
+        default:
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped           ");
+            break;
+        }
+    }
+}
+
+void made4(void)
+{
+    static uint8_t tracking = 0; // 追踪状态
+    static uint8_t stage = 0;    // 当前执行阶段
+
+    if (GetKeyState(GPIO_Pin_13, GPIOC)) // 检测KEY0
+    {
+        tracking = !tracking; // 切换追踪状态
+        if (!tracking)
+        {
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped            ");
+            stage = 0; // 重置阶段
+        }
+    }
+
+    if (tracking)
+    {
+        uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+        uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+        uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
+        uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+
+        switch (stage)
+        {
+        case 0: // 阶段0：前进直到检测到黑线
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Moving Forward   ");
             if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
-                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED) {
-                Motor_Stop();  // 停止小车
-                OLED_ShowString(2, 1, "White Surface Detected");
-                OLED_ShowString(3, 1, "                   ");
-                LED_FMQ();  // 执行一次LED_FMQ
-                //Delay_ms(500); // 稍微延时，防止状态不稳定
-                break;  // 跳出循环，进行下一个操作
-            }
-        }
-
-        // 4. 右转800ms
-        Motor_TurnRight(40);
-        Delay_ms(1600);
-
-        // 5. 前进直到检测到黑线
-        Motor_GoStraight(speed);
-        while (1) {
-            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
-            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
-            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
-            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
-            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED || i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED) {
-                Motor_Stop();  // 停止小车
+                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
+            {
+                Motor_Stop();
                 OLED_ShowString(2, 1, "Black Line Detected");
-                OLED_ShowString(3, 1, "                ");
-                LED_FMQ();  // 执行一次LED_FMQ
-                //Delay_ms(500); // 稍微延时，防止状态不稳定
-                break;  // 跳出循环，进行下一个操作
+                LED_FMQ();
+                stage = 1; // 进入下一阶段
             }
-        }
+            break;
 
-        // 6. 右转800ms
-        Motor_TurnRight(40);
-        Delay_ms(1600);
+        case 1: // 阶段1：右转1600ms
+            Motor_TurnRight(40);
+            OLED_ShowString(2, 1, "Turning Right    ");
+            Delay_ms(1600);
+            Motor_Stop();
+            stage = 2; // 进入下一阶段
+            break;
 
-        // 7. 前进直到检测到白线并停止
-        Motor_GoStraight(speed);
-        while (1) {
-            uint8_t i1 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
-            uint8_t i2 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
-            uint8_t i3 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14);
-            uint8_t i4 = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15);
+        case 2: // 阶段2：前进3秒
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Moving Forward   ");
+            Delay_s(3);
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped           ");
+            LED_FMQ();
+            stage = 3; // 进入下一阶段
+            break;
+
+        case 3: // 阶段3：左转1600ms
+            Motor_TurnLeft(40);
+            OLED_ShowString(2, 1, "Turning Left     ");
+            Delay_ms(1600);
+            Motor_Stop();
+            stage = 4; // 进入下一阶段
+            break;
+
+        case 4: // 阶段4：前进直到检测到黑线
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Searching Black  ");
             if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
-                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED) {
-                Motor_Stop();  // 停止小车
-                OLED_ShowString(2, 1, "White Surface Detected");
-                OLED_ShowString(3, 1, "                   ");
-                LED_FMQ();  // 执行一次LED_FMQ
-                break;  // 停止所有操作
+                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
+            {
+                Motor_Stop();
+                OLED_ShowString(2, 1, "Black Line Detected");
+                LED_FMQ();
+                stage = 5; // 进入下一阶段
             }
+            break;
+
+        case 5: // 阶段5：左转1600ms
+            Motor_TurnLeft(40);
+            OLED_ShowString(2, 1, "Turning Left     ");
+            Delay_ms(1600);
+            Motor_Stop();
+            stage = 6; // 进入下一阶段
+            break;
+
+        case 6: // 阶段6：前进3秒
+            Motor_GoStraight(speed);
+            OLED_ShowString(2, 1, "Moving Forward   ");
+            Delay_s(3);
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped           ");
+            LED_FMQ();
+            tracking = 0; // 任务完成，重置追踪状态
+            break;
+
+        default:
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Stopped           ");
+            break;
         }
-
-        // 设置标志，确保以后不再执行
-        executed = 1;
-
-        // 停止小车并显示状态
-        Motor_Stop();
-        OLED_ShowString(2, 1, "Stopped            ");
-        OLED_ShowString(3, 1, "                   ");
-        LED_FMQ();
     }
 }
 
 
-	

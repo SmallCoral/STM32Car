@@ -23,7 +23,7 @@ int main(void)
         if (GetKeyState(GPIO_Pin_0, GPIOA))
         {
             mode++;
-            if (mode > 3) mode = 1; // 循环切换模式 (1, 2, 3)
+            if (mode > 4) mode = 1; // 循环切换模式 (1, 2, 3，4)
 
             // 根据模式显示状态
             if (mode == 1)
@@ -47,6 +47,13 @@ int main(void)
                 OLED_ShowString(3, 1, "                ");
                 OLED_ShowString(4, 1, "                ");
             }
+						else if (mode == 4)
+            {
+                OLED_ShowString(1, 1, "Mode 4          ");
+                OLED_ShowString(2, 1, "                ");
+                OLED_ShowString(3, 1, "                ");
+                OLED_ShowString(4, 1, "                ");
+            }
 
             Motor_Stop(); // 切换模式时停止小车
             one = 0; // 重置黑线检测标志
@@ -63,6 +70,10 @@ int main(void)
         else if (mode == 3) // 第三题
         {
 						made3();
+        }
+				else if (mode == 4) // 第三题
+        {
+						made4();
         }
     }
 }
