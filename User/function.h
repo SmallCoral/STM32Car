@@ -36,10 +36,10 @@ void OLED_NAME(void)
 		OLED_ShowChinese(2,1,5);
 		OLED_ShowChinese(2,2,6);
 		OLED_ShowChinese(2,3,7);
-	
-		OLED_ShowChinese(3,1,9);	
+
+		OLED_ShowChinese(3,1,9);
 		OLED_ShowChinese(3,2,10);
-	
+
 		OLED_ShowChinese(4,1,12);
 		OLED_ShowChinese(4,2,13);
 }
@@ -122,8 +122,9 @@ void made2(void)
 
 void made3(void)
 {
-    static uint8_t tracking = 0; // 追踪状态
-    static uint8_t stage = 0;    // 当前执行阶段
+    static uint8_t tracking = 0;    // 追踪状态
+    static uint8_t stage = 0;       // 当前执行阶段
+    static uint8_t cycle_count = 0; // 已完成的循环次数
 
     if (GetKeyState(GPIO_Pin_13, GPIOC)) // 检测KEY0
     {
@@ -132,7 +133,8 @@ void made3(void)
         {
             Motor_Stop();
             OLED_ShowString(2, 1, "Stopped            ");
-            stage = 0; // 重置阶段
+            stage = 0;          // 重置阶段
+            cycle_count = 0;    // 重置循环计数
         }
     }
 
@@ -148,8 +150,8 @@ void made3(void)
         case 0: // 阶段0：前进直到检测到黑线
             Motor_GoStraight(speed);
             OLED_ShowString(2, 1, "Moving Forward   ");
-            if (i1 == BLACK_LINE_DETECTED || i2 == BLACK_LINE_DETECTED ||
-                i3 == BLACK_LINE_DETECTED || i4 == BLACK_LINE_DETECTED)
+            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED ||
+                i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED)
             {
                 Motor_Stop();
                 OLED_ShowString(2, 1, "Black Line Detected");
@@ -158,24 +160,43 @@ void made3(void)
             }
             break;
 
-        case 1: // 阶段1：右转1.5秒
+        case 1: // 阶段1：右转1.45秒
             Motor_TurnRight(40);
             OLED_ShowString(2, 1, "Turning Right    ");
-            Delay_ms(1500);
+            Delay_ms(1450);
             Motor_Stop();
             OLED_ShowString(2, 1, "Turn Complete    ");
             stage = 2; // 进入下一阶段
             break;
 
-        case 2: // 阶段2：前进2.5秒
+        case 2: // 阶段2：前进一坤秒
             Motor_GoStraight(speed);
             OLED_ShowString(2, 1, "Moving Forward   ");
             Delay_ms(2500);
             Motor_Stop();
             OLED_ShowString(2, 1, "Task Complete    ");
             LED_FMQ();
-            tracking = 0; // 任务完成，重置追踪状态
-            stage = 0; // 重置阶段
+            if (cycle_count == 0) // 如果是第一次循环，添加右转
+            {
+                stage = 3; // 进入右转阶段
+            }
+            else
+            {
+                tracking = 0; // 任务完成，停止追踪
+                stage = 0;    // 重置阶段
+                cycle_count = 0; // 重置循环计数
+                OLED_ShowString(2, 1, "All Tasks Done   ");
+            }
+            break;
+
+        case 3: // 阶段3：右转1.45秒
+            Motor_TurnRight(40);
+            OLED_ShowString(2, 1, "Turning Right    ");
+            Delay_ms(1450);
+            Motor_Stop();
+            OLED_ShowString(2, 1, "Turn Complete    ");
+            cycle_count++; // 增加循环计数
+            stage = 0;     // 重置阶段为0，开始下一次循环
             break;
 
         default:
@@ -188,8 +209,9 @@ void made3(void)
 
 void made4(void)
 {
-    static uint8_t tracking = 0; // 追踪状态
-    static uint8_t stage = 0;    // 当前执行阶段
+    static uint8_t tracking = 0;    // 追踪状态
+    static uint8_t stage = 0;       // 当前执行阶段
+    static uint8_t cycle_count = 0; // 已完成的循环次数
 
     if (GetKeyState(GPIO_Pin_13, GPIOC)) // 检测KEY0
     {
@@ -198,7 +220,8 @@ void made4(void)
         {
             Motor_Stop();
             OLED_ShowString(2, 1, "Stopped            ");
-            stage = 0; // 重置阶段
+            stage = 0;          // 重置阶段
+            cycle_count = 0;    // 重置循环计数
         }
     }
 
@@ -214,8 +237,8 @@ void made4(void)
         case 0: // 阶段0：前进直到检测到黑线
             Motor_GoStraight(speed);
             OLED_ShowString(2, 1, "Moving Forward   ");
-            if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
-                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
+            if (i1 == WHITE_SURFACE_DETECTED || i2 == WHITE_SURFACE_DETECTED ||
+                i3 == WHITE_SURFACE_DETECTED || i4 == WHITE_SURFACE_DETECTED)
             {
                 Motor_Stop();
                 OLED_ShowString(2, 1, "Black Line Detected");
@@ -224,61 +247,43 @@ void made4(void)
             }
             break;
 
-        case 1: // 阶段1：右转1600ms
-            Motor_TurnRight(40);
+        case 1: // 阶段1：左转一坤秒
+            Motor_TurnLeft(40);
             OLED_ShowString(2, 1, "Turning Right    ");
-            Delay_ms(1600);
+            Delay_ms(2500);
             Motor_Stop();
+            OLED_ShowString(2, 1, "Turn Complete    ");
             stage = 2; // 进入下一阶段
             break;
 
-        case 2: // 阶段2：前进3秒
+        case 2: // 阶段2：前进一坤秒
             Motor_GoStraight(speed);
             OLED_ShowString(2, 1, "Moving Forward   ");
-            Delay_s(3);
+            Delay_ms(2500);
             Motor_Stop();
-            OLED_ShowString(2, 1, "Stopped           ");
+            OLED_ShowString(2, 1, "Task Complete    ");
             LED_FMQ();
-            stage = 3; // 进入下一阶段
-            break;
-
-        case 3: // 阶段3：左转1600ms
-            Motor_TurnLeft(40);
-            OLED_ShowString(2, 1, "Turning Left     ");
-            Delay_ms(1600);
-            Motor_Stop();
-            stage = 4; // 进入下一阶段
-            break;
-
-        case 4: // 阶段4：前进直到检测到黑线
-            Motor_GoStraight(speed);
-            OLED_ShowString(2, 1, "Searching Black  ");
-            if (i1 == BLACK_LINE_DETECTED && i2 == BLACK_LINE_DETECTED &&
-                i3 == BLACK_LINE_DETECTED && i4 == BLACK_LINE_DETECTED)
+            if (cycle_count == 0) // 如果是第一次循环，添加左转
             {
-                Motor_Stop();
-                OLED_ShowString(2, 1, "Black Line Detected");
-                LED_FMQ();
-                stage = 5; // 进入下一阶段
+                stage = 3; // 进入左转阶段
+            }
+            else
+            {
+                tracking = 0; // 任务完成，停止追踪
+                stage = 0;    // 重置阶段
+                cycle_count = 0; // 重置循环计数
+                OLED_ShowString(2, 1, "All Tasks Done   ");
             }
             break;
 
-        case 5: // 阶段5：左转1600ms
+        case 3: // 阶段3：左转1.8秒
             Motor_TurnLeft(40);
-            OLED_ShowString(2, 1, "Turning Left     ");
-            Delay_ms(1600);
+            OLED_ShowString(2, 1, "Turning Right    ");
+            Delay_ms(1800);
             Motor_Stop();
-            stage = 6; // 进入下一阶段
-            break;
-
-        case 6: // 阶段6：前进3秒
-            Motor_GoStraight(speed);
-            OLED_ShowString(2, 1, "Moving Forward   ");
-            Delay_s(3);
-            Motor_Stop();
-            OLED_ShowString(2, 1, "Stopped           ");
-            LED_FMQ();
-            tracking = 0; // 任务完成，重置追踪状态
+            OLED_ShowString(2, 1, "Turn Complete    ");
+            cycle_count++; // 增加循环计数
+            stage = 0;     // 重置阶段为0，开始下一次循环
             break;
 
         default:
@@ -288,5 +293,4 @@ void made4(void)
         }
     }
 }
-
 
